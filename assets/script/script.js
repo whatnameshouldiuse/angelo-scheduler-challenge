@@ -4,10 +4,10 @@ function handleTaskSave(event) {
   var timeClicked = $(event.target);
   var blockTime = timeClicked.parent('.time-block').attr('id');
   var blockText = timeClicked.siblings('textarea').val();
-  localStorage.setItem(blockTime, blockText);
+  localStorage.setItem(blockTime, JSON.stringify(blockText));
   
   console.log('Saved on Time: ' + blockTime);
-  console.log('Saved Content: ' + blockText);
+  console.log('Saved Content: ' + JSON.stringify(blockText));
 }
 
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
@@ -32,20 +32,16 @@ $(function () {
   timeBlocks.each( function() {
     var hourId = $(this).attr('id');
     var hourNum = hourId.split('-')[1];
-    console.log('Comparing Block Hour ' + hourNum + ' and Current Hour ' + dayjs().hour());
     if (hourNum < dayjs().hour()) {
-      if ($(this).hasClass('present')) {
-        $(this).removeClass('present');
-      }
+      $(this).removeClass('present future');
       $(this).addClass('past');
     }
     else if (hourNum == dayjs().hour()) {
-      if ($(this).hasClass('future')) {
-        $(this).removeClass('future');
-      }
+      $(this).removeClass('past future');
       $(this).addClass('present');
     }
     else {
+      $(this).removeClass('past present');
       $(this).addClass('future');
     }
   });
@@ -53,7 +49,20 @@ $(function () {
   // TODO: Add code to get any user input that was saved in localStorage and set
   // the values of the corresponding textarea elements. HINT: How can the id
   // attribute of each time-block be used to do this?
-  
+  timeBlocks.each( function() {
+    var savedText;
+
+    try {
+      savedText = JSON.parse(localStorage.getItem($(this).attr('id')));
+    } catch (e) {
+      // How unfortunate.
+    }
+
+    if (savedText !== null) {
+      $(this).children('textarea').val(savedText);
+    }
+  })
+
   // TODO: Add code to display the current date in the header of the page.
 });
 
