@@ -1,3 +1,15 @@
+// Target the time block that contains the save-button that was clicked.
+// Save the text typed in that time-block in it's designated time.
+function handleTaskSave(event) {
+  var timeClicked = $(event.target);
+  var blockTime = timeClicked.parent('.time-block').attr('id');
+  var blockText = timeClicked.siblings('textarea').val();
+  localStorage.setItem(blockTime, blockText);
+  
+  console.log('Saved on Time: ' + blockTime);
+  console.log('Saved Content: ' + blockText);
+}
+
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
@@ -8,7 +20,9 @@ $(function () {
   // function? How can DOM traversal be used to get the "hour-x" id of the
   // time-block containing the button that was clicked? How might the id be
   // useful when saving the description in local storage?
-  //
+  var timeBlocks = $('.time-block');
+  timeBlocks.children('button').on('click', handleTaskSave);
+  
   // TODO: Add code to apply the past, present, or future class to each time
   // block by comparing the id to the current hour. HINTS: How can the id
   // attribute of each time-block be used to conditionally add or remove the
